@@ -1,1085 +1,823 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecossistema Machado v6.1 - PCDF</title>
-    <link rel="manifest" href="#" id="manifest-placeholder">
-    <meta name="theme-color" content="#134252">
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAA7EAAAOxAGVKw4bAAABdklEQVRYhe2WsU7DMBBAH4mKhIRYWJhYGFhYGFhYGFhYGFhYGFhYGFhYGFhYGFhYGFhYGFhYGFhYGFhY+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP+AP+gD/gD/gD/oA/4A/4A/6AP+AP">
-    <style>
-        /* CSS completo integrado aqui */
-        :root {
-            --military-primary: #134252;
-            --military-secondary: #1d7485;
-            --military-accent: #32b8c6;
-            --military-dark: #0f2d36;
-            --military-darker: #0a1f26;
-            --military-light: rgba(50, 184, 198, 0.1);
-            
-            --color-white: rgba(255, 255, 255, 1);
-            --color-black: rgba(0, 0, 0, 1);
-            --color-gray-200: rgba(245, 245, 245, 1);
-            --color-gray-300: rgba(167, 169, 169, 1);
-            --color-gray-400: rgba(119, 124, 124, 1);
-            --color-slate-500: rgba(98, 108, 113, 1);
-            --color-teal-300: rgba(50, 184, 198, 1);
-            --color-teal-400: rgba(45, 166, 178, 1);
-            --color-red-400: rgba(255, 84, 89, 1);
-            --color-orange-400: rgba(230, 129, 97, 1);
-            
-            --color-background: var(--military-darker);
-            --color-surface: var(--military-dark);
-            --color-text: var(--color-gray-200);
-            --color-text-secondary: rgba(167, 169, 169, 0.8);
-            --color-primary: var(--military-accent);
-            --color-primary-hover: var(--color-teal-400);
-            --color-card-border: rgba(119, 124, 124, 0.2);
-            --color-border: rgba(119, 124, 124, 0.3);
-            
-            --font-family-base: "Arial", sans-serif;
-            --font-family-mono: "Courier New", monospace;
-            --space-4: 4px;
-            --space-8: 8px;
-            --space-12: 12px;
-            --space-16: 16px;
-            --space-20: 20px;
-            --space-24: 24px;
-            --space-32: 32px;
-            --radius-base: 8px;
-            --radius-lg: 12px;
-            --radius-full: 9999px;
-            --duration-normal: 250ms;
-        }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ecossistema Machado v6.5 — PWA (PCDF/Concursos)</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- PapaParse (CSV) -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.min.js"></script>
+<script>pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.9.179/pdf.worker.min.js";</script>
+<!-- Google Identity + gapi -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js" async defer></script>
 
-        body {
-            font-family: var(--font-family-base);
-            background: var(--color-background);
-            color: var(--color-text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+<style>
+:root{--p:#0f172a;--l:#1f2937;--ink:#e5e7eb;--muted:#94a3b8;}
+body{background:#0b1020;color:var(--ink)}
+.card{background:var(--p);border:1px solid var(--l);border-radius:14px}
+.input{background:#0b1220;border:1px solid var(--l);border-radius:10px;color:var(--ink);padding:.6rem .8rem}
+.btn{background:#3b82f6;color:white;border-radius:10px;padding:.6rem .9rem}
+.btn.ghost{background:#1f2937}
+.badge{background:#111827;border:1px solid var(--l);border-radius:999px;padding:.2rem .6rem;font-size:.8rem}
+.small{color:var(--muted);font-size:.85rem}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid var(--l);padding:.5rem .6rem;vertical-align:top}
+hr.sep{border:none;border-top:1px solid var(--l);margin:.75rem 0}
+kbd{background:#111827;border:1px solid #263040;border-radius:4px;padding:2px 4px}
+</style>
 
-        .military-header {
-            background: linear-gradient(135deg, var(--military-primary) 0%, var(--military-secondary) 50%, var(--military-dark) 100%);
-            border-bottom: 2px solid var(--military-accent);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .military-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent 0%, rgba(50, 184, 198, 0.1) 50%, transparent 100%);
-            animation: scan 3s ease-in-out infinite;
-        }
-
-        @keyframes scan {
-            0%, 100% { transform: translateX(-100%); }
-            50% { transform: translateX(100%); }
-        }
-
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 var(--space-16);
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-16) 0;
-            position: relative;
-            z-index: 1;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-16);
-        }
-
-        .military-badge {
-            display: flex;
-            align-items: center;
-            gap: var(--space-8);
-            padding: var(--space-8) var(--space-12);
-            background: rgba(50, 184, 198, 0.2);
-            border: 1px solid var(--military-accent);
-            border-radius: var(--radius-base);
-            backdrop-filter: blur(10px);
-        }
-
-        .badge-icon {
-            font-size: 18px;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .badge-rank {
-            font-size: 12px;
-            font-weight: bold;
-            color: var(--military-accent);
-            letter-spacing: 1px;
-        }
-
-        .header-title h1 {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--color-white);
-            margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .version-tag {
-            font-size: 11px;
-            color: var(--military-accent);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .header-stats {
-            display: flex;
-            gap: var(--space-24);
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: var(--space-8);
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: var(--radius-base);
-            border: 1px solid rgba(50, 184, 198, 0.3);
-            backdrop-filter: blur(5px);
-        }
-
-        .stat-value {
-            display: block;
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--military-accent);
-            font-family: var(--font-family-mono);
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 11px;
-            color: var(--color-text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 2px;
-        }
-
-        .main-nav {
-            background: var(--color-surface);
-            border-bottom: 1px solid var(--color-border);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-        }
-
-        .nav-content {
-            display: flex;
-            gap: 2px;
-            padding: var(--space-8) 0;
-        }
-
-        .nav-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--space-4);
-            padding: var(--space-12) var(--space-16);
-            border: none;
-            background: transparent;
-            color: var(--color-text-secondary);
-            border-radius: var(--radius-base);
-            cursor: pointer;
-            transition: all var(--duration-normal);
-            position: relative;
-            overflow: hidden;
-            border-bottom: 3px solid transparent;
-        }
-
-        .nav-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(50, 184, 198, 0.1), transparent);
-            transition: left var(--duration-normal);
-        }
-
-        .nav-btn:hover::before {
-            left: 100%;
-        }
-
-        .nav-btn:hover {
-            color: var(--color-primary);
-            background: rgba(50, 184, 198, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .nav-btn.active {
-            color: var(--color-primary);
-            background: rgba(50, 184, 198, 0.08);
-            border-bottom-color: var(--color-primary);
-            box-shadow: 0 0 10px rgba(50, 184, 198, 0.3);
-        }
-
-        .nav-icon {
-            font-size: 16px;
-        }
-
-        .nav-text {
-            font-size: 11px;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .main-container {
-            padding: var(--space-24) 0;
-            min-height: calc(100vh - 200px);
-        }
-
-        .module {
-            display: none;
-            animation: fadeInUp 0.5s ease-out;
-        }
-
-        .module.active {
-            display: block;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .module-header {
-            margin-bottom: var(--space-32);
-            text-align: center;
-        }
-
-        .module-header h2 {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--color-primary);
-            margin-bottom: var(--space-8);
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .module-header p {
-            font-size: 16px;
-            color: var(--color-text-secondary);
-            margin: 0;
-        }
-
-        .grid-layout {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: var(--space-24);
-            margin-bottom: var(--space-32);
-        }
-
-        .card {
-            background: var(--color-surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--color-card-border);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
-            transition: all var(--duration-normal);
-            position: relative;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--military-accent), var(--color-primary));
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border-color: var(--color-primary);
-        }
-
-        .card-header {
-            padding: var(--space-20);
-            border-bottom: 1px solid var(--color-card-border);
-            background: rgba(50, 184, 198, 0.05);
-        }
-
-        .card-header h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--color-text);
-            margin: 0;
-        }
-
-        .card-body {
-            padding: var(--space-24);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-8);
-            padding: var(--space-12) var(--space-20);
-            border-radius: var(--radius-base);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all var(--duration-normal);
-            border: none;
-            text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left var(--duration-normal);
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--color-primary), var(--military-secondary));
-            color: var(--military-darker);
-            box-shadow: 0 4px 12px rgba(50, 184, 198, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(50, 184, 198, 0.4);
-        }
-
-        .w-full {
-            width: 100%;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: rgba(119, 124, 124, 0.15);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--color-primary), var(--military-accent));
-            border-radius: var(--radius-full);
-            transition: width var(--duration-normal);
-            position: relative;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: progress-shine 2s ease-in-out infinite;
-        }
-
-        @keyframes progress-shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-text {
-            text-align: center;
-            margin-top: var(--space-8);
-            font-family: var(--font-family-mono);
-            color: var(--color-text-secondary);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: var(--space-16);
-                text-align: center;
-            }
-
-            .header-stats {
-                justify-content: center;
-            }
-
-            .nav-content {
-                justify-content: center;
-                flex-wrap: wrap;
-            }
-
-            .grid-layout {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;Machado v6.5&quot;,&quot;short_name&quot;:&quot;Machado&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0b1020&quot;,&quot;theme_color&quot;:&quot;#0ea5e9&quot;}" />
 </head>
 <body>
-    <!-- Header Military -->
-    <header class="military-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="military-badge">
-                        <span class="badge-icon">🎯</span>
-                        <span class="badge-rank">OPERADOR</span>
-                    </div>
-                    <div class="header-title">
-                        <h1>ECOSSISTEMA MACHADO</h1>
-                        <div class="version-tag">v6.1 PCDF</div>
-                    </div>
-                </div>
-                <div class="header-stats">
-                    <div class="stat-item">
-                        <span class="stat-value" id="days-remaining">120</span>
-                        <span class="stat-label">DIAS</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="current-xp">250</span>
-                        <span class="stat-label">XP</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value" id="current-level">1</span>
-                        <span class="stat-label">NÍVEL</span>
-                    </div>
-                </div>
-            </div>
+<header class="bg-gradient-to-r from-sky-500 to-emerald-500 text-black p-4">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <h1 class="text-lg font-semibold">Ecossistema Machado v6.5 — PWA</h1>
+    <div class="flex items-center gap-2">
+      <span class="badge">Offline Ready</span>
+      <span id="swStatus" class="small"></span>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+  <!-- ====== WIZARD + IGM ====== -->
+  <section class="card p-4 lg:col-span-3">
+    <h2 class="text-xl font-semibold">Wizard — Setup + IGM (Missões)</h2>
+    <div class="grid md:grid-cols-6 gap-3 mt-2">
+      <div><label class="small">Concurso</label><input id="wizConcurso" class="input w-full" placeholder="PCDF Perito 2025"></div>
+      <div><label class="small">Início</label><input id="wizInicio" type="date" class="input w-full"></div>
+      <div><label class="small">Duração (dias)</label><input id="wizDias" type="number" class="input w-full" value="120"></div>
+      <div><label class="small">Horas/semana</label><input id="wizHoras" type="number" class="input w-full" value="30"></div>
+      <div><label class="small">Horas/dia Ataque</label><input id="wizHAtk" type="number" class="input w-full" value="6"></div>
+      <div><label class="small">Horas/dia Pós-Plantão</label><input id="wizHPos" type="number" class="input w-full" value="2.5"></div>
+    </div>
+
+    <div class="grid md:grid-cols-4 gap-3 mt-3">
+      <div><label class="small">Matéria</label><select id="sessMateria" class="input w-full"></select></div>
+      <div><label class="small">Tópico</label><select id="sessTopico" class="input w-full"></select></div>
+      <div><label class="small">Subtópico</label><select id="sessSub" class="input w-full"></select></div>
+      <div><label class="small">Tipo da sessão</label>
+        <select id="sessTipo" class="input w-full">
+          <option>Leitura/Audiobook</option><option>Anki</option>
+          <option>Resolução de Exercícios</option><option>Simulado</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button id="btnGerarPlano" class="btn">Gerar/Atualizar Plano</button>
+      <button id="btnHoje" class="btn ghost">Hoje</button>
+      <button id="btnExport" class="btn ghost">Exportar JSON</button>
+      <input id="impJson" type="file" accept="application/json" class="hidden"><button id="btnImport" class="btn ghost">Importar JSON</button>
+      <button id="btnSessCSV" class="btn ghost">Exportar Sessões CSV</button>
+    </div>
+
+    <hr class="sep"/>
+    <div class="grid md:grid-cols-3 gap-4">
+      <div>
+        <h4 class="font-semibold">Ordem do Dia (missões)</h4>
+        <div id="odDia" class="small"></div>
+      </div>
+      <div>
+        <h4 class="font-semibold">Progresso Geral (120d)</h4>
+        <div class="small">Concluídos (KS≥8.5/10): <span id="progNum"></span></div>
+        <div class="w-full bg-slate-800 rounded h-3 mt-1"><div id="progBar" class="bg-emerald-500 h-3 rounded" style="width:0%"></div></div>
+      </div>
+      <div>
+        <h4 class="font-semibold">Progresso por Matéria</h4>
+        <div id="progMats" class="small max-h-40 overflow-auto"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CRONOS ====== -->
+  <section class="card p-4">
+    <h3 class="text-lg font-semibold">Cronos — Bio-Adaptativo</h3>
+    <div class="grid grid-cols-3 gap-2">
+      <div><label class="small">Sono (h)</label><input id="bioSono" type="number" class="input w-full" value="7"></div>
+      <div><label class="small">Estresse (1–10)</label><input id="bioEstresse" type="number" class="input w-full" value="3"></div>
+      <div><label class="small">Foco (1–10)</label><input id="bioFoco" type="number" class="input w-full" value="7"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <label class="small flex items-center gap-2"><input id="bioHidra" type="checkbox" checked>Hidratação OK</label>
+      <label class="small flex items-center gap-2"><input id="bioExerOntem" type="checkbox">Exercício no dia anterior</label>
+    </div>
+    <div class="mt-2 flex gap-2">
+      <button id="btnIPC" class="btn">Calcular IPC</button><span id="txtIPC" class="badge">IPC: —</span>
+    </div>
+    <hr class="sep"/>
+    <div class="grid grid-cols-5 gap-2">
+      <div><label class="small">Sessão atual (min)</label><input id="crDur" type="number" class="input w-full" value="50"></div>
+      <div><label class="small">Palavras lidas</label><input id="crPal" type="number" class="input w-full" value="0"></div>
+      <div><label class="small">Score Feynman (0–10)</label><input id="crFey" type="number" class="input w-full" value="7"></div>
+      <div><label class="small">Feynman % p/ conclusão</label><input id="crFeyPct" type="number" class="input w-full" value="70"></div>
+      <div><label class="small">Divagação (0–5)</label><input id="crDiv" type="number" class="input w-full" value="1"></div>
+    </div>
+    <div class="mt-2 flex gap-2">
+      <button id="btnCronos" class="btn">CRONOS</button><span id="txtCronos" class="badge">Próx.: — min</span>
+      <button id="btnEncerrar" class="btn ghost">Encerrar Sessão (Ctrl+Enter)</button>
+    </div>
+    <p class="small mt-2">XP sofre <b>penalidade</b> se sono &lt; 6h ou sem exercício ontem.</p>
+    <hr class="sep"/>
+    <div>
+      <h4 class="font-semibold">Nitro (Gamificação)</h4>
+      <div class="small">Nível: <span id="gLevel">1</span> • XP: <span id="gXP">0</span> • Streak: <span id="gStreak">0</span>d</div>
+      <div class="w-full bg-slate-800 rounded h-3 mt-1"><div id="gBar" class="bg-sky-500 h-3 rounded" style="width:0%"></div></div>
+    </div>
+  </section>
+
+  <!-- ====== CATÁLOGO ====== -->
+  <section class="card p-4">
+    <h3 class="text-lg font-semibold">Catálogo — Materiais & KS</h3>
+    <div class="grid grid-cols-3 gap-2">
+      <div><label class="small">Matéria</label><input id="catMat" class="input w-full" placeholder="Direito Administrativo"></div>
+      <div><label class="small">Tópico</label><input id="catTop" class="input w-full" placeholder="Ato Administrativo"></div>
+      <div><label class="small">Subtópico</label><input id="catSub" class="input w-full" placeholder="Anulação × Revogação"></div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-2">
+      <div><label class="small">Confiança MAT (0–10)</label><input id="catConf" type="number" class="input w-full" value="0"></div>
+      <div><label class="small">Relevância (%)</label><input id="catRel" type="number" class="input w-full" value="10"></div>
+      <div class="flex items-end"><button id="btnAddSub" class="btn w-full">Adicionar/Atualizar</button></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <div><label class="small">KS do Subtópico (0–10)</label><input id="topKS" type="number" class="input w-full" value="5"></div>
+      <div class="flex items-end"><button id="btnSetKS" class="btn ghost w-full">Salvar KS</button></div>
+    </div>
+    <div id="catList" class="small max-h-64 overflow-auto mt-2"></div>
+  </section>
+
+  <!-- ====== CALENDÁRIO ====== -->
+  <section class="card p-4 lg:col-span-2">
+    <h3 class="text-lg font-semibold">Calendário & Revisões</h3>
+    <div class="flex gap-2">
+      <button id="btnViewAll" class="btn ghost">Todos</button>
+      <button id="btnViewToday" class="btn">Hoje</button>
+      <button id="btnViewRevs" class="btn ghost">Revisões</button>
+      <span class="small">Imprevistos: <kbd>Ctrl</kbd>+<kbd>I</kbd> — MAD (3–5 dias)</span>
+    </div>
+    <div id="calOut" class="small max-h-80 overflow-auto mt-3"></div>
+  </section>
+
+  <!-- ====== ATENA ====== -->
+  <section class="card p-4">
+    <h3 class="text-lg font-semibold">Atena — Pista de Testes</h3>
+    <div class="grid grid-cols-3 gap-2 mt-2">
+      <div><label class="small">CSV Banco</label><input id="csvFile" type="file" accept=".csv"></div>
+      <div><label class="small">Filtro Matéria</label><select id="atenaFiltro" class="input w-full"></select></div>
+      <div class="flex items-end"><button id="btnAtenaStart" class="btn w-full">Iniciar Simulador</button></div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-2">
+      <div><label class="small">Sessão Externa (manual)</label><input id="atenaManual" class="input w-full" placeholder="QConcursos — 30 itens, 70% acerto"></div>
+      <div><label class="small">Classificação de Erro</label><select id="atenaErro" class="input w-full"><option>Desatenção</option><option>Conceito</option><option>Lógica</option></select></div>
+      <div><label class="small">Confiança média</label><select id="atenaConf" class="input w-full"><option>Certeza</option><option>Dúvida</option><option>Chute</option></select></div>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button id="btnAtenaLog" class="btn">Registrar Sessão</button>
+      <span id="marOut" class="small"></span>
+    </div>
+    <hr class="sep"/>
+    <div id="simulador" class="small"></div>
+    <div id="cadernoVermelho" class="small mt-2"></div>
+    <hr class="sep"/>
+    <div>
+      <h4 class="font-semibold">Calculadora de Amostragem (95% ±5%)</h4>
+      <div class="grid grid-cols-4 gap-2 mt-2">
+        <div><label class="small">Total (N)</label><input id="sampleN" type="number" class="input w-full" value="1000"></div>
+        <div><label class="small">p</label><input id="sampleP" type="number" class="input w-full" step="0.05" value="0.5"></div>
+        <div><label class="small">Erro (e)</label><input id="sampleE" type="number" class="input w-full" step="0.01" value="0.05"></div>
+        <div class="flex items-end"><button id="btnSample" class="btn w-full">Calcular n</button></div>
+      </div>
+      <div id="sampleOut" class="small mt-2"></div>
+    </div>
+  </section>
+
+  <!-- ====== PROMETEUS ====== -->
+  <section class="card p-4 lg:col-span-3">
+    <h3 class="text-lg font-semibold">Prometeus — Telemetria</h3>
+    <div class="grid md:grid-cols-3 gap-4 mt-2">
+      <canvas id="chartTempo"></canvas>
+      <canvas id="chartAcerto"></canvas>
+      <canvas id="chartErros"></canvas>
+    </div>
+  </section>
+
+  <!-- ====== DÉDALO ====== -->
+  <section class="card p-4 lg:col-span-2">
+    <h3 class="text-lg font-semibold">Dédalo — IA</h3>
+    <div class="grid grid-cols-2 gap-2">
+      <label class="small flex items-center gap-2"><input id="useBackend" type="checkbox" checked>Usar backend seguro (/api/gemini)</label>
+      <div><label class="small">DEV: Gemini API Key</label><input id="geminiKey" class="input w-full" placeholder="AIza... (não use em produção)"></div>
+    </div>
+    <hr class="sep"/>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <h4 class="font-semibold">Oráculo de Feynman</h4>
+        <textarea id="feynmanText" class="input w-full h-36" placeholder="Explique com suas palavras..."></textarea>
+        <button id="btnFeynman" class="btn mt-2">Analisar Explicação</button>
+        <pre id="feynmanOut" class="small mt-2 whitespace-pre-wrap"></pre>
+      </div>
+      <div>
+        <h4 class="font-semibold">Forja de Questões (C/E)</h4>
+        <textarea id="forjaCorpus" class="input w-full h-36" placeholder="Cole lei/doutrina/jurisprudência"></textarea>
+        <div class="grid grid-cols-2 gap-2 mt-2">
+          <div><label class="small">Itens</label><input id="forjaN" type="number" class="input w-full" value="10"></div>
+          <div><label class="small">Vetor</label><select id="forjaVec" class="input w-full"><option>Qualificador Absoluto</option><option>Inversão Conceitual</option><option>Uma Palavra</option></select></div>
         </div>
-    </header>
+        <button id="btnForja" class="btn mt-2">Gerar Itens</button>
+        <pre id="forjaOut" class="small mt-2 whitespace-pre-wrap"></pre>
+      </div>
+    </div>
+  </section>
 
-    <!-- Navigation -->
-    <nav class="main-nav">
-        <div class="container">
-            <div class="nav-content">
-                <button class="nav-btn active" data-module="mad">
-                    <span class="nav-icon">🎯</span>
-                    <span class="nav-text">MAD</span>
-                </button>
-                <button class="nav-btn" data-module="mcu">
-                    <span class="nav-icon">📚</span>
-                    <span class="nav-text">MCU</span>
-                </button>
-                <button class="nav-btn" data-module="mra">
-                    <span class="nav-icon">💡</span>
-                    <span class="nav-text">MRA</span>
-                </button>
-                <button class="nav-btn" data-module="igm">
-                    <span class="nav-icon">🏆</span>
-                    <span class="nav-text">IGM</span>
-                </button>
-                <button class="nav-btn" data-module="dedalo">
-                    <span class="nav-icon">🤖</span>
-                    <span class="nav-text">DÉDALO</span>
-                </button>
-                <button class="nav-btn" data-module="ulgc">
-                    <span class="nav-icon">☁️</span>
-                    <span class="nav-text">ULGC</span>
-                </button>
-            </div>
+  <!-- ====== MIT / MAEP / MAR / VIGIA ====== -->
+  <section class="card p-4">
+    <h3 class="text-lg font-semibold">MIT • MAEP • MAR • VIGIA</h3>
+    <div>
+      <h4 class="font-semibold">MIT — Intercalação</h4>
+      <div class="grid grid-cols-3 gap-2">
+        <div><label class="small">Slots</label><input id="mitSlots" type="number" class="input w-full" value="4"></div>
+        <div><label class="small">Min/slot</label><input id="mitLen" type="number" class="input w-full" value="50"></div>
+        <div class="flex items-end gap-2">
+          <button id="btnMIT" class="btn w-full">Criar Sessão</button>
         </div>
-    </nav>
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button id="btnMITQuiz" class="btn ghost">Gerar Quiz Misto (IA)</button>
+      </div>
+      <div id="mitPlan" class="small mt-2"></div>
+    </div>
+    <hr class="sep"/>
+    <div>
+      <h4 class="font-semibold">MAEP — Grafo de Conhecimento</h4>
+      <div class="grid grid-cols-3 gap-2">
+        <div><input id="gA" class="input w-full" placeholder="Penal>Dolo>Culpa consciente"></div>
+        <div><input id="gB" class="input w-full" placeholder="Penal>Dolo>Dolo eventual"></div>
+        <div><button id="gLink" class="btn w-full">Conectar</button></div>
+      </div>
+      <pre id="graphOut" class="small mt-2 whitespace-pre-wrap"></pre>
+    </div>
+    <hr class="sep"/>
+    <div>
+      <h4 class="font-semibold">MAR — Risco (Dúvida/Chute)</h4>
+      <div id="marDash" class="small"></div>
+    </div>
+    <hr class="sep"/>
+    <div>
+      <h4 class="font-semibold">VIGIA — Alertas Manuais</h4>
+      <div class="grid grid-cols-3 gap-2">
+        <div><input id="vigiaText" class="input w-full" placeholder="Ex.: STF — Busca domiciliar / fundada suspeita"></div>
+        <div><button id="btnVigiaAdd" class="btn w-full">Adicionar</button></div>
+        <div><span class="small">Vai para o pool “Surpresa” (MIT/Forja).</span></div>
+      </div>
+      <div id="vigiaList" class="small mt-2"></div>
+    </div>
+  </section>
 
-    <!-- Main Container -->
-    <main class="main-container">
-        <div class="container">
+  <!-- ====== ULGC ====== -->
+  <section class="card p-4 lg:col-span-2">
+    <h3 class="text-lg font-semibold">ULGC — A Usina (Google Drive + IA)</h3>
+    <div class="small">Lê <code>/MACHADO_ULGC/INPUTS/[Matéria]/</code>, consolida PDFs/TXT por tópico e salva 4 artefatos em <code>/MACHADO_ULGC/OUTPUTS/[Matéria]/</code>.</div>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <div><label class="small">Google OAuth Client ID</label><input id="gClient" class="input w-full" placeholder="xxxxxxxx.apps.googleusercontent.com"></div>
+      <div><label class="small">Google API Key</label><input id="gApiKey" class="input w-full" placeholder="AIza..."></div>
+    </div>
+    <div class="flex gap-2 mt-2">
+      <button id="btnGInit" class="btn ghost">Init gapi</button>
+      <button id="btnGLogin" class="btn">Login Google</button>
+      <span id="gStatus" class="small"></span>
+    </div>
+    <hr class="sep"/>
+    <div class="grid grid-cols-2 gap-2">
+      <div><label class="small">Matéria</label><select id="ulgcMat" class="input w-full"></select></div>
+      <div><label class="small">Tópico/Subtópico</label><input id="ulgcTop" class="input w-full" placeholder="Cadeia de Custódia — arts. 158-A a 158-F"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-2">
+      <div><label class="small">Nível</label><select id="ulgcNivel" class="input w-full"><option>Fundamental</option><option>Médio</option><option>Superior/PhD</option></select></div>
+      <div class="flex items-end"><button id="btnULGC" class="btn w-full">GERAR MATERIAL DE ESTUDO</button></div>
+    </div>
+    <div id="ulgcLog" class="small mt-2"></div>
+  </section>
 
-            <!-- MAD Module -->
-            <div id="mad-module" class="module active">
-                <div class="module-header">
-                    <h2>🎯 MAD - Missão e Acompanhamento Diário</h2>
-                    <p>Check-in operacional e cronograma de 120 dias</p>
-                </div>
+  <!-- ====== PDF → Questões ====== -->
+  <section class="card p-4">
+    <h3 class="text-lg font-semibold">Garimpo (PDF → Questões)</h3>
+    <div class="grid grid-cols-3 gap-2">
+      <div><label class="small">PDF(s) Tec Concursos</label><input id="pdfFiles" type="file" accept="application/pdf" multiple></div>
+      <div><label class="small">Regex Split</label><input id="pdfRegex" class="input w-full" value="(?=\\bQUEST[ÃA]O\\s*\\d+\\b)"></div>
+      <div class="flex items-end"><button id="btnPDF" class="btn w-full">Extrair</button></div>
+    </div>
+    <div id="pdfMsg" class="small mt-2"></div>
+    <div id="pdfTable" class="small max-h-40 overflow-auto mt-2"></div>
+  </section>
 
-                <div class="grid-layout">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Check-in Operacional</h3>
-                        </div>
-                        <div class="card-body">
-                            <div id="checkin-status">
-                                <p>Aguardando check-in</p>
-                            </div>
-                            <button class="btn btn-primary w-full" onclick="performCheckin()">
-                                Realizar Check-in
-                            </button>
-                        </div>
-                    </div>
+</main>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Cronograma 120 Dias</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="progress-container">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 0%"></div>
-                                </div>
-                                <div class="progress-text">0 / 120 dias</div>
-                            </div>
-                            
-                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px;">
-                                <div style="text-align: center; padding: 12px; background: rgba(34, 197, 94, 0.08); border-radius: 8px;">
-                                    <span style="display: block; font-size: 18px; font-weight: bold; color: #10b981;">30</span>
-                                    <span style="font-size: 11px; color: var(--color-text-secondary);">1º Mês</span>
-                                </div>
-                                <div style="text-align: center; padding: 12px; background: rgba(34, 197, 94, 0.08); border-radius: 8px;">
-                                    <span style="display: block; font-size: 18px; font-weight: bold; color: #10b981;">60</span>
-                                    <span style="font-size: 11px; color: var(--color-text-secondary);">2º Mês</span>
-                                </div>
-                                <div style="text-align: center; padding: 12px; background: rgba(34, 197, 94, 0.08); border-radius: 8px;">
-                                    <span style="display: block; font-size: 18px; font-weight: bold; color: #10b981;">90</span>
-                                    <span style="font-size: 11px; color: var(--color-text-secondary);">3º Mês</span>
-                                </div>
-                                <div style="text-align: center; padding: 12px; background: rgba(34, 197, 94, 0.08); border-radius: 8px;">
-                                    <span style="display: block; font-size: 18px; font-weight: bold; color: #10b981;">120</span>
-                                    <span style="font-size: 11px; color: var(--color-text-secondary);">Missão Cumprida</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<footer class="max-w-7xl mx-auto p-4 small text-center text-slate-400">
+  Machado v6.5 — PWA • Ctrl+I: MAD (imprevistos) • Ctrl+Enter: Encerrar Sessão • Dados em localStorage • Gemini via /api/gemini.
+</footer>
 
-            <!-- MCU Module -->
-            <div id="mcu-module" class="module">
-                <div class="module-header">
-                    <h2>📚 MCU - Mapa de Competências Unificado</h2>
-                    <p>Competências das 12 matérias PCDF</p>
-                </div>
+<script>
+/*** ========= PWA SW ========= ***/
+(function(){
+  const sw = `
+    const C='machado-v65';
+    self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(['./','/','index.html'])).then(()=>self.skipWaiting()))});
+    self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim())});
+    self.addEventListener('fetch',e=>{
+      e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{
+        if(r && e.request.method==='GET' && r.status===200){const cp=r.clone(); caches.open(C).then(cc=>cc.put(e.request,cp));}
+        return r;
+      }).catch(()=>c)));
+    });
+  `;
+  try{
+    const url = URL.createObjectURL(new Blob([sw],{type:'text/javascript'}));
+    navigator.serviceWorker?.register(url).then(()=>document.getElementById('swStatus').textContent='SW ativo');
+  }catch{}
+})();
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Direito Constitucional</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 1</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 25%"></div>
-                            </div>
-                            <div class="progress-text">25%</div>
-                        </div>
-                    </div>
+/*** ========= Estado ========= ***/
+const S = {
+  concurso:'PCDF Perito 2025',
+  inicio:null, dias:120, horasSemana:30, hAtk:6, hPos:2.5,
+  materias:{},            // {Mat:{conf,rel,topicos:{Top:{subs:{Sub:{ks0_10,done,estHoras,spentMin}}}}}}
+  schedule:[], reviews:[],
+  sessions:[],            // {kind:'checkin'|'session'|'externa', ...}
+  bancoQuestoes:[], anotaVermelha:{},
+  surprisePool:[],        // VIGIA / MIT
+  graph:{},               // MAEP (key -> Set)
+  ai:{useBackend:true,key:''},
+  drive:{apiKey:'',clientId:'',token:'',authed:false},
+  gamify:{xp:0,level:1,streak:0,lastDay:null}
+};
+const $=s=>document.querySelector(s);
+const fmt=d=>new Date(d).toISOString().slice(0,10);
+const dayAdd=(d,dd)=>fmt(new Date(new Date(d).getTime()+dd*86400000));
+const clamp=(v,min=0,max=100)=>Math.max(min,Math.min(max,v));
+const keyOf=(m,t,s)=>`${m}>${t}>${s}`;
+const save=()=>localStorage.setItem('machado_v65',JSON.stringify(S));
+const load=()=>{const x=localStorage.getItem('machado_v65'); if(x) Object.assign(S,JSON.parse(x));};
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Direito Administrativo</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 1</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 15%"></div>
-                            </div>
-                            <div class="progress-text">15%</div>
-                        </div>
-                    </div>
+/*** ========= Init ========= ***/
+load();
+(()=>{ if(!S.inicio) S.inicio = fmt(new Date()); UI_init(); preload(); refreshSelectors(); if(!S.schedule.length){ S.schedule=buildCalendar(S.inicio,S.dias,S.hAtk,S.hPos); autoAssign(); } drawCalendar(); drawCatalog(); updateIGM(); buildCharts(); })();
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Direito Penal</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 2</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 45%"></div>
-                            </div>
-                            <div class="progress-text">45%</div>
-                        </div>
-                    </div>
+/*** ========= Preload (80/20 + Leis detalhadas) ========= ***/
+function addSubtopic(mat,conf,rel,top,sub,est=1.5,ks=5){
+  if(!S.materias[mat]) S.materias[mat]={conf,rel,topicos:{}};
+  S.materias[mat].conf=conf; S.materias[mat].rel=rel;
+  if(!S.materias[mat].topicos[top]) S.materias[mat].topicos[top]={subs:{}};
+  if(!S.materias[mat].topicos[top].subs[sub]) S.materias[mat].topicos[top].subs[sub]={ks0_10:ks,done:false,estHoras:1.5,spentMin:0};
+}
+function preload(){
+  if(Object.keys(S.materias).length) return;
+  const rel={'Medicina Legal':18,'Língua Portuguesa':10,'Direito Constitucional':7,'Direito Administrativo':7,'Direito Penal':5,'Direito Processual Penal':10,'Legislação Especial':15,'Informática':10,'Raciocínio Lógico-Matemático':12,'LODF':6,'Criminalística':15};
+  const conf={'Medicina Legal':6,'Língua Portuguesa':3,'Direito Constitucional':4,'Direito Administrativo':4,'Direito Penal':4,'Direito Processual Penal':6,'Legislação Especial':0,'Informática':0,'Raciocínio Lógico-Matemático':0,'LODF':0,'Criminalística':0};
+  const LE={
+    'Lei 11.343/2006 — Drogas':['Art. 28: elementos','Art. 33 caput: núcleos/majorantes','§4º: tráfico privilegiado','Art. 40: causas de aumento'],
+    'Lei 10.826/2003 — Desarmamento':['Art. 12: posse irregular','Art. 14: porte ilegal','Art. 16: numeração suprimida/arma restrita','Excludentes/causas de diminuição'],
+    'Lei 11.340/2006 — Maria da Penha':['Medidas protetivas (22–24)','Competência/atos urgentes','Tipos de violência','Procedimentos/preventiva'],
+    'Lei 8.072/1990 — Hediondos':['Rol/equiparados','Progressão/regime','Graça/indulto'],
+    'Lei 9.296/1996 — Interceptação':['Requisitos/prazos','Competência/forma','Prova ilícita por derivação'],
+    'Lei 12.030/2009 — Perícia Oficial':['Princípios/garantias','Atuação do perito','Relação com CPP (cadeia)']
+  };
+  const ML={'Tanatologia':['Conceito de morte','Fenômenos abióticos: imediatos/mediatos/destrutivos'],'Traumatologia':['PAF médico-legal','Lesões contusas']};
+  const CR={'Local de Crime':['Isolamento/preservação','Fotografia/contaminação'],'Vestígios':['Classificação/coleta','Acondicionamento/lacres'],'Cadeia de Custódia':['Arts. 158-A a 158-F','Fluxo e rotulagem']};
+  const DPP={'Provas':['Corpo de delito','Reconhecimento (art.226)','Provas ilícitas'],'Cautelares':['Busca domiciliar','Apreensão/limites'],'Cadeia de Custódia':['Conceitos/formulários']};
+  const ADM={'Ato Administrativo':['Requisitos/atributos','Anulação × Revogação × Convalidação']};
+  const CONSTI={'Direitos/Garantias':['Art.5º núcleo','Inviolabilidade domicílio']};
+  const PENAL={'Teoria do Crime':['Fato típico/ilicitude','Culpabilidade/excludentes']};
+  const INF={'Segurança da Informação':['CIA/Firewall/IDS-IPS','Criptografia simétrica × assimétrica']};
+  const RLM={'Lógica Proposicional':['Equivalências','De Morgan'],'Quantificadores':['Negação correta','Tradução simbólica']};
+  const LODF={'Organização do DF':['Competências','PCDF — peculiaridades']};
+  const packs=[['Legislação Especial',conf['Legislação Especial'],rel['Legislação Especial'],LE],['Medicina Legal',conf['Medicina Legal'],rel['Medicina Legal'],ML],['Criminalística',conf['Criminalística'],rel['Criminalística'],CR],['Direito Processual Penal',conf['Direito Processual Penal'],rel['Direito Processual Penal'],DPP],['Direito Administrativo',conf['Direito Administrativo'],rel['Direito Administrativo'],ADM],['Direito Constitucional',conf['Direito Constitucional'],rel['Direito Constitucional'],CONSTI],['Direito Penal',conf['Direito Penal'],rel['Direito Penal'],PENAL],['Informática',conf['Informática'],rel['Informática'],INF],['Raciocínio Lógico-Matemático',conf['Raciocínio Lógico-Matemático'],rel['Raciocínio Lógico-Matemático'],RLM],['LODF',conf['LODF'],rel['LODF'],LODF]];
+  for(const [m,c,r,tree] of packs){ for(const [t,subs] of Object.entries(tree)){ for(const s of subs){ addSubtopic(m,c,r,t,s,1.5,Math.max(3,c)); } } }
+  save();
+}
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Direito Processual Penal</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 1</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 30%"></div>
-                            </div>
-                            <div class="progress-text">30%</div>
-                        </div>
-                    </div>
+/*** ========= UI init ========= ***/
+function UI_init(){
+  $('#wizInicio').value=S.inicio; $('#wizConcurso').value=S.concurso; $('#wizDias').value=S.dias; $('#wizHoras').value=S.horasSemana; $('#wizHAtk').value=S.hAtk; $('#wizHPos').value=S.hPos;
+  $('#btnGerarPlano').onclick=onPlan; $('#btnHoje').onclick=()=>drawCalendar(1);
+  $('#btnExport').onclick=()=>download('machado-v65.json',JSON.stringify(S,null,2));
+  $('#btnImport').onclick=()=>$('#impJson').click();
+  $('#impJson').onchange=e=>{const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{Object.assign(S,JSON.parse(ev.target.result)); save(); refreshSelectors(); drawCalendar(); drawCatalog(); updateIGM(); updateCharts();}; r.readAsText(f);}
+  $('#btnSessCSV').onclick=exportSessionsCSV;
+  $('#btnIPC').onclick=calcIPC; $('#btnCronos').onclick=calcCronos; $('#btnEncerrar').onclick=endSessionLog;
+  $('#sessMateria').onchange=onSessMat; $('#sessTopico').onchange=onSessTop;
+  $('#btnViewAll').onclick=()=>drawCalendar(0); $('#btnViewToday').onclick=()=>drawCalendar(1); $('#btnViewRevs').onclick=()=>drawCalendar(2);
+  $('#btnAddSub').onclick=addSubUI; $('#btnSetKS').onclick=saveSubKS;
+  $('#csvFile').onchange=onCSV; $('#btnAtenaStart').onclick=startSim; $('#btnAtenaLog').onclick=logAtena; $('#btnSample').onclick=calcSample;
+  $('#useBackend').onchange=e=>{S.ai.useBackend=e.target.checked; save();}; $('#geminiKey').oninput=e=>{S.ai.key=e.target.value.trim(); save();};
+  $('#btnFeynman').onclick=runFeynman; $('#btnForja').onclick=runForja;
+  $('#btnGInit').onclick=gInit; $('#btnGLogin').onclick=gLogin; $('#btnULGC').onclick=runULGC;
+  $('#btnPDF').onclick=onPDF;
+  $('#btnMIT').onclick=buildMIT; $('#btnMITQuiz').onclick=mitQuizIA;
+  $('#gLink').onclick=addEdge; $('#btnVigiaAdd').onclick=addVigia;
+  document.addEventListener('keydown',e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)) endSessionLog(); if(e.key==='i'&&e.ctrlKey) doMAD(); });
+}
+function download(name,content){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([content],{type:'application/json'})); a.download=name; a.click(); }
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Direito Civil</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 1</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 10%"></div>
-                            </div>
-                            <div class="progress-text">10%</div>
-                        </div>
-                    </div>
+/*** ========= Selectors ========= ***/
+function refreshSelectors(){
+  const mats=Object.keys(S.materias).sort();
+  $('#sessMateria').innerHTML = mats.map(m=>`<option>${m}</option>`).join('');
+  $('#ulgcMat').innerHTML = $('#sessMateria').innerHTML;
+  $('#atenaFiltro').innerHTML = '<option value="">(todas)</option>'+$('#sessMateria').innerHTML;
+  onSessMat();
+}
+function onSessMat(){
+  const m=$('#sessMateria').value; const tops=Object.keys(S.materias[m].topicos);
+  $('#sessTopico').innerHTML = tops.map(t=>`<option>${t}</option>`).join('');
+  onSessTop();
+}
+function onSessTop(){
+  const m=$('#sessMateria').value, t=$('#sessTopico').value;
+  const subs=Object.keys(S.materias[m].topicos[t].subs);
+  $('#sessSub').innerHTML = subs.map(s=>`<option>${s}</option>`).join('');
+  updateIGM();
+}
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Criminologia</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 16px;">
-                                <div style="color: var(--color-primary); font-weight: bold;">Nível 1</div>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 20%"></div>
-                            </div>
-                            <div class="progress-text">20%</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+/*** ========= IGM (Missões + Progresso) ========= ***/
+function updateIGM(){
+  // Missões do dia (calendário de hoje + MRA por KS)
+  const today=fmt(new Date()); const d=S.schedule.find(x=>x.date===today);
+  let list='—';
+  if(d && d.tasks?.length){
+    list='<ul class="list-disc pl-5">';
+    for(const k of d.tasks){
+      const sv=lookupSub(k); const ks=sv?.ks0_10||5; const presc = ks<4? 'Base: videoaula + PDF inicial' : (ks<8.5? 'Consolidação: 50 questões focadas' : 'Domínio: informativos/artigos + revisão');
+      list+=`<li>${k} — KS ${ks.toFixed(1)}/10 → <b>${presc}</b></li>`;
+    }
+    list+='</ul>';
+  }
+  $('#odDia').innerHTML=list;
 
-            <!-- MRA Module -->
-            <div id="mra-module" class="module">
-                <div class="module-header">
-                    <h2>💡 MRA - Módulo de Recomendações Adaptativas</h2>
-                    <p>Recomendações personalizadas de estudo</p>
-                </div>
+  // Progresso geral e por matéria
+  let done=0, total=0; const pm=[];
+  for(const [m,mv] of Object.entries(S.materias)){
+    let d=0,t=0;
+    for(const [tpc,tv] of Object.entries(mv.topicos)){
+      for(const [s,sv] of Object.entries(tv.subs)){ t++; if(sv.ks0_10>=8.5) d++; }
+    }
+    done+=d; total+=t; pm.push({m,pc: t? Math.round(100*d/t):0});
+  }
+  $('#progNum').textContent=`${done}/${total} (${total?Math.round(100*done/total):0}%)`;
+  $('#progBar').style.width = (total? (100*done/total):0)+'%';
+  pm.sort((a,b)=>b.pc-a.pc);
+  $('#progMats').innerHTML = pm.map(x=>`<div class="mb-1">${x.m} — ${x.pc}% <div class="w-full bg-slate-800 h-2 rounded mt-1"><div class="bg-emerald-500 h-2 rounded" style="width:${x.pc}%"></div></div></div>`).join('');
+}
 
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Recomendações Prioritárias</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="margin-bottom: 20px; padding: 20px; border-left: 4px solid #ef4444; background: rgba(239, 68, 68, 0.08); border-radius: 12px;">
-                                <h4 style="margin-bottom: 8px; color: var(--color-text);">Direito Constitucional - Direitos Fundamentais</h4>
-                                <p style="margin-bottom: 12px; color: var(--color-text-secondary);">Sua performance neste tópico precisa de atenção. Recomendamos 2h de estudo.</p>
-                                <div style="display: flex; gap: 16px; font-size: 11px; color: var(--color-text-secondary);">
-                                    <span>Dificuldade: Alta</span>
-                                    <span>Tempo: 2h</span>
-                                </div>
-                            </div>
+/*** ========= Calendário / MAD ========= ***/
+function buildCalendar(start,days,hA,hP){
+  const out=[]; let d=new Date(start);
+  for(let i=0;i<days;i++){
+    const dow=d.getDay(); const type=(dow===0?'Pós-Plantão':'Ataque'); const hours=(type==='Ataque')?hA:hP;
+    out.push({date:fmt(d),type,hours,tasks:[]}); d=new Date(d.getTime()+86400000);
+  } return out;
+}
+function IPA(key){
+  const [m,t,s]=key.split('>'); const subj=S.materias[m]; const ks=(S.materias[m].topicos[t].subs[s].ks0_10*10);
+  return (100-ks)*(subj.rel/100)+(subj.conf===0?5:0);
+}
+function autoAssign(){
+  S.schedule.forEach(d=>d.tasks=[]);
+  const pend=[];
+  for(const [m,mv] of Object.entries(S.materias)){
+    for(const [t,tv] of Object.entries(mv.topicos)){
+      for(const [s,sv] of Object.entries(tv.subs)){ if(!sv.done) pend.push({key:keyOf(m,t,s),est:sv.estHoras}); }
+    }
+  }
+  pend.sort((a,b)=>IPA(b.key)-IPA(a.key));
+  let i=0; for(const tk of pend){
+    let placed=false;
+    while(i<S.schedule.length && !placed){
+      const d=S.schedule[i]; const used=(d.tasks||[]).reduce((a,k)=>a+(lookupSub(k)?.estHoras||0),0);
+      const free=Math.max(0,d.hours-used);
+      if(d.type!=='Plantão' && free>=tk.est){ d.tasks.push(tk.key); placed=true; } else i++;
+    }
+  } save(); updateIGM();
+}
+function lookupSub(key){ const [m,t,s]=key.split('>'); return S.materias[m]?.topicos[t]?.subs[s]||null; }
+function drawCalendar(view=0){
+  const box=$('#calOut'); box.innerHTML='';
+  if(view===2){ drawReviews(); return; }
+  const src=S.schedule.filter(d=>view===1? d.date===fmt(new Date()):true);
+  let h=`<table><tr><th>Data</th><th>Tipo</th><th>Horas</th><th>Tarefas</th></tr>`;
+  for(const d of src){
+    const tasks=(d.tasks||[]).map(k=>k.split('>').slice(-1)[0]).join(' | ')||'-';
+    h+=`<tr><td>${d.date}</td>
+      <td><select data-date="${d.date}" class="input typeSel"><option${d.type==='Ataque'?' selected':''}>Ataque</option><option${d.type==='Pós-Plantão'?' selected':''}>Pós-Plantão</option><option${d.type==='Plantão'?' selected':''}>Plantão</option></select></td>
+      <td><input data-date="${d.date}" class="input hSel" type="number" value="${d.hours}"></td>
+      <td>${tasks}</td></tr>`;
+  } h+='</table>'; box.innerHTML=h;
+  box.querySelectorAll('.typeSel').forEach(e=>e.onchange=ev=>{const d=S.schedule.find(x=>x.date===ev.target.dataset.date); d.type=ev.target.value; d.hours=(d.type==='Ataque')?S.hAtk:(d.type==='Pós-Plantão'?S.hPos:0); save();});
+  box.querySelectorAll('.hSel').forEach(e=>e.onchange=ev=>{const d=S.schedule.find(x=>x.date===ev.target.dataset.date); d.hours=+ev.target.value||0; save();});
+}
+function drawReviews(){ const rows=[...S.reviews].sort((a,b)=>a.date.localeCompare(b.date)).map(r=>`<tr><td>${r.date}</td><td>${r.subKey}</td></tr>`).join(''); $('#calOut').innerHTML=`<table><tr><th>Data</th><th>Subtópico</th></tr>${rows}</table>`; }
+function doMAD(){
+  const h=+prompt('Horas perdidas hoje (MAD dilui 3–5 dias Ataque):','2')||0; if(!h) return;
+  const arr=S.schedule.filter(x=>x.type==='Ataque' && new Date(x.date)>=new Date()).slice(0,5);
+  const n=Math.max(3,Math.min(5,arr.length)), add=Math.ceil(h/n); for(let i=0;i<n;i++) arr[i].hours+=add;
+  autoAssign(); drawCalendar(); alert('MAD aplicado.');
+}
 
-                            <div style="margin-bottom: 20px; padding: 20px; border-left: 4px solid #f59e0b; background: rgba(245, 158, 11, 0.08); border-radius: 12px;">
-                                <h4 style="margin-bottom: 8px; color: var(--color-text);">Direito Penal - Crimes contra a Pessoa</h4>
-                                <p style="margin-bottom: 12px; color: var(--color-text-secondary);">Bom progresso! Continue com revisões para consolidar o conhecimento.</p>
-                                <div style="display: flex; gap: 16px; font-size: 11px; color: var(--color-text-secondary);">
-                                    <span>Dificuldade: Média</span>
-                                    <span>Tempo: 1h</span>
-                                </div>
-                            </div>
+/*** ========= Wizard & Catálogo ========= ***/
+function onPlan(){
+  S.concurso=$('#wizConcurso').value.trim()||S.concurso;
+  S.inicio=$('#wizInicio').value||fmt(new Date());
+  S.dias=+$('#wizDias').value||120; S.horasSemana=+$('#wizHoras').value||30; S.hAtk=+$('#wizHAtk').value||6; S.hPos=+$('#wizHPos').value||2.5;
+  S.schedule=buildCalendar(S.inicio,S.dias,S.hAtk,S.hPos); autoAssign(); drawCalendar(); save(); updateIGM();
+}
+function addSubUI(){
+  const m=$('#catMat').value.trim(), t=$('#catTop').value.trim(), s=$('#catSub').value.trim();
+  const c=+$('#catConf').value||0, r=+$('#catRel').value||10;
+  if(!m||!t||!s) return alert('Informe Matéria/Tópico/Subtópico.');
+  addSubtopic(m,c,r,t,s,1.5,5); save(); refreshSelectors(); drawCatalog(); autoAssign(); drawCalendar();
+}
+function saveSubKS(){
+  const m=$('#catMat').value.trim(), t=$('#catTop').value.trim(), s=$('#catSub').value.trim(); const v=+$('#topKS').value;
+  const sub=lookupSub(keyOf(m,t,s)); if(!sub) return alert('Subtópico inválido.'); sub.ks0_10=clamp(v,0,10)/1; save(); drawCatalog(); updateIGM();
+}
+function drawCatalog(){
+  const box=$('#catList'); const rows=[];
+  for(const [m,mv] of Object.entries(S.materias)){
+    for(const [t,tv] of Object.entries(mv.topicos)){
+      for(const [s,sv] of Object.entries(tv.subs)){
+        const ks=sv.ks0_10; const ipa=Math.round((100-ks*10)*(mv.rel/100)+(mv.conf===0?5:0));
+        rows.push({ipa,line:`<tr><td>${m}</td><td>${t}</td><td>${s}</td><td>${ks.toFixed(1)}/10</td><td>${ipa}</td></tr>`});
+      }
+    }
+  }
+  rows.sort((a,b)=>b.ipa-a.ipa);
+  box.innerHTML=`<table><tr><th>Matéria</th><th>Tópico</th><th>Subtópico</th><th>KS</th><th>IPA</th></tr>${rows.map(r=>r.line).join('')}</table>`;
+}
 
-                            <div style="margin-bottom: 20px; padding: 20px; border-left: 4px solid #10b981; background: rgba(16, 185, 129, 0.08); border-radius: 12px;">
-                                <h4 style="margin-bottom: 8px; color: var(--color-text);">Criminologia - Teorias Criminológicas</h4>
-                                <p style="margin-bottom: 12px; color: var(--color-text-secondary);">Excelente domínio! Mantenha com revisões espaçadas.</p>
-                                <div style="display: flex; gap: 16px; font-size: 11px; color: var(--color-text-secondary);">
-                                    <span>Dificuldade: Baixa</span>
-                                    <span>Tempo: 30min</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+/*** ========= Cronos + Nitro ========= ***/
+function calcIPC(){
+  const sono=+$('#bioSono').value||0, est=+$('#bioEstresse').value||0, foco=+$('#bioFoco').value||0;
+  const hidra=$('#bioHidra').checked?1:0, exer=$('#bioExerOntem').checked?1:0;
+  const IPC=clamp((sono*5)+((11-est)*3)+(foco*2)+((hidra+exer)*5),0,100);
+  $('#txtIPC').textContent=`IPC: ${IPC}`;
+  S.sessions.push({ts:Date.now(),kind:'checkin',sono,est,foco,hidra,exer,IPC}); save(); updateCharts();
+}
+function calcCronos(){
+  const dur=+$('#crDur').value||50, pal=+$('#crPal').value||0, fe=+$('#crFey').value||0, dv=+$('#crDiv').value||0;
+  const ppm=(pal && dur)? (pal/dur):0;
+  const next=Math.round(dur - ((ppm/dur)*5) + ((fe/10)*5) - (dv*2)); // Fórmula Cronos
+  $('#txtCronos').textContent=`Próx.: ${Math.max(20,Math.min(60,next))} min`;
+}
+function xpAdd(amount){
+  const day=fmt(new Date());
+  if(S.gamify.lastDay!==day){ S.gamify.streak = (S.gamify.lastDay && (new Date(day)-new Date(S.gamify.lastDay)===86400000))? S.gamify.streak+1:1; S.gamify.lastDay=day; }
+  S.gamify.xp += Math.max(0,amount);
+  // curva simples: 200xp por nível
+  S.gamify.level = Math.max(1, Math.floor(S.gamify.xp/200)+1);
+  const nextLv = S.gamify.level*200; const prevLv=(S.gamify.level-1)*200; const prog=(100*(S.gamify.xp-prevLv)/(nextLv-prevLv));
+  $('#gLevel').textContent=S.gamify.level; $('#gXP').textContent=S.gamify.xp; $('#gStreak').textContent=S.gamify.streak; $('#gBar').style.width=prog+'%';
+}
+function endSessionLog(){
+  const m=$('#sessMateria').value, t=$('#sessTopico').value, s=$('#sessSub').value, tipo=$('#sessTipo').value;
+  const feyPct=+$('#crFeyPct').value||0; const perf=window.__lastExerciseAcc||0;
+  const product=(feyPct*perf)/100; // regra 75%
+  let concluded=false;
+  if(product>=75){
+    concluded=true; const today=fmt(new Date()); [1,7,15,30].forEach(d=>S.reviews.push({date:dayAdd(today,d),subKey:keyOf(m,t,s)}));
+    const sub=lookupSub(keyOf(m,t,s)); if(sub){ sub.done=true; sub.ks0_10=Math.max(sub.ks0_10, Math.min(10, Math.round(product/10))); }
+  }
+  // XP base proporcional + penalidades bio
+  const lastCheck=[...S.sessions].reverse().find(x=>x.kind==='checkin');
+  let xp=Math.round(product); if(lastCheck){ if(lastCheck.sono<6) xp=Math.round(xp*0.85); if(!lastCheck.exer) xp=Math.round(xp*0.9); }
+  xpAdd(xp);
+  // atualizar tempo e velocidade
+  const spent=+$('#crDur').value||50; const sub=lookupSub(keyOf(m,t,s)); if(sub){ sub.spentMin += spent; sub.estHoras=Math.max(0.6,Math.min(3, (sub.spentMin/60)/Math.max(1,(sub.done?1:0)+0.5))); }
+  S.sessions.push({ts:Date.now(),kind:'session',m,t,s,tipo,feyPct,perf,product,xp,concluded}); save(); updateCharts(); drawCatalog(); autoAssign(); drawCalendar(); updateIGM();
+  alert(`Sessão registrada. XP +${xp}${concluded?' — subtópico concluído e revisões agendadas.':''}`);
+}
 
-            <!-- IGM Module -->
-            <div id="igm-module" class="module">
-                <div class="module-header">
-                    <h2>🏆 IGM - Intelligence Gaming Module</h2>
-                    <p>Sistema de gamificação e ranks militares</p>
-                </div>
+/*** ========= Atena ========= ***/
+let simState=null;
+function onCSV(e){ const f=e.target.files[0]; if(!f) return;
+  Papa.parse(f,{header:true,complete:(res)=>{ const arr=res.data.filter(x=>x.enunciado||x.texto||x.Enunciado);
+    S.bancoQuestoes = arr.map((r,i)=>({id:r.id||`CSV_${Date.now()}_${i}`,materia:r.materia||r.Materia||'',topico:r.topico||r.Tópico||'',subtopico:r.subtopico||r.Subtópico||'',enunciado:r.enunciado||r.texto||r.Enunciado||'',gabarito:(r.gabarito||r.Gabarito||'').trim()}));
+    save(); refreshSelectors(); alert(`Importadas ${S.bancoQuestoes.length} questões.`);} });
+}
+function startSim(){
+  const fil=$('#atenaFiltro').value; const pool=S.bancoQuestoes.filter(q=>!fil || q.materia===fil);
+  if(!pool.length) return alert('Banco vazio/filtro sem resultados.');
+  simState={pool,idx:0,acertos:0,erros:0}; renderSim();
+}
+function renderSim(){
+  const q=simState.pool[simState.idx];
+  $('#simulador').innerHTML=`
+    <div class="p-3 bg-slate-800 rounded">
+      <div class="small mb-2">#${simState.idx+1}/${simState.pool.length} — <b>${q.materia||'-'}</b> / ${q.topico||'-'} / ${q.subtopico||'-'}</div>
+      <div class="mb-2">${q.enunciado||'(sem texto)'}</div>
+      <div class="flex gap-2">
+        <button class="btn" onclick="markResp('Certo')">Certo</button>
+        <button class="btn" onclick="markResp('Errado')">Errado</button>
+        <button class="btn ghost" onclick="abrirCaderno('${q.id}')">Caderno Vermelho</button>
+      </div>
+      <div class="small mt-2">Placar: ✅ ${simState.acertos} | ❌ ${simState.erros}</div>
+    </div>`;
+}
+window.markResp=(r)=>{
+  const q=simState.pool[simState.idx]; const g=(q.gabarito||'').toLowerCase(); const ok=(r.toLowerCase()===g);
+  if(ok) simState.acertos++; else simState.erros++; simState.idx++;
+  if(simState.idx>=simState.pool.length){
+    const acc=Math.round(100*simState.acertos/(simState.acertos+simState.erros)); window.__lastExerciseAcc=acc;
+    alert(`Fim do simulador. Acurácia: ${acc}%. Registre sessão (erro/ confiança) para computar XP & MAR/MAEP.`);
+    simState=null; $('#simulador').innerHTML='';
+  }else renderSim();
+};
+window.abrirCaderno=(id)=>{ const txt=S.anotaVermelha[id]||''; $('#cadernoVermelho').innerHTML=`
+  <div class="p-3 bg-slate-900 rounded">
+    <div class="small">Caderno Vermelho — Questão ${id}</div>
+    <textarea id="nota_${id}" class="input w-full h-28" placeholder="Sua autópsia do erro...">${txt}</textarea>
+    <div class="mt-2"><button class="btn" onclick="salvarNota('${id}')">Salvar</button></div>
+  </div>`; };
+window.salvarNota=(id)=>{ S.anotaVermelha[id]=$('#nota_'+id).value; save(); alert('Anotação salva.'); };
 
-                <div style="max-width: 900px; margin: 0 auto;">
-                    <div class="card" style="margin-bottom: 32px;">
-                        <div class="card-body" style="text-align: center;">
-                            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px;">
-                                <span style="font-size: 3rem;">⭐</span>
-                                <div>
-                                    <div style="font-size: 20px; font-weight: bold; color: var(--color-primary); text-transform: uppercase; letter-spacing: 2px;">RECRUTA</div>
-                                    <div style="font-size: 16px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">250 / 500 XP</div>
-                                </div>
-                            </div>
-                            <div class="progress-bar" style="height: 20px;">
-                                <div class="progress-fill" style="width: 50%"></div>
-                            </div>
-                        </div>
-                    </div>
+function logAtena(){
+  const desc=$('#atenaManual').value.trim(); const errTipo=$('#atenaErro').value; const conf=$('#atenaConf').value;
+  const m=$('#sessMateria').value, t=$('#sessTopico').value, s=$('#sessSub').value; const perf=window.__lastExerciseAcc||0;
+  S.sessions.push({ts:Date.now(),kind:'externa',m,t,s,desc,errTipo,conf,perf}); save(); updateCharts();
+  // MAR — risco por confiança
+  const stats = sessionsRisk();
+  let alerta=''; if(stats.errRateDoubt>0.3 || stats.errRateGuess>0.3) alerta='ALERTA MAR: CESSAR-FOGO — deixe em branco os próximos 10 itens que gerarem dúvida.';
+  $('#marOut').textContent=alerta;
+  // MAEP — se erro conceitual, propagar vulnerabilidade
+  if(errTipo==='Conceito'){ propagateRisk(keyOf(m,t,s)); }
+  // encerrar sessão p/ XP & conclusão
+  endSessionLog();
+}
+function sessionsRisk(){
+  const s=S.sessions.filter(x=>x.kind==='externa'); let dTot=0,dErr=0,gTot=0,gErr=0;
+  s.forEach(x=>{ if(x.conf==='Dúvida'){ dTot++; if(x.perf<50) dErr++; } if(x.conf==='Chute'){ gTot++; if(x.perf<50) gErr++; } });
+  const errRateDoubt = dTot? dErr/dTot: 0, errRateGuess=gTot? gErr/gTot: 0;
+  $('#marDash').textContent=`Dúvida: ${Math.round(errRateDoubt*100)}% erro • Chute: ${Math.round(errRateGuess*100)}% erro`;
+  return {errRateDoubt, errRateGuess};
+}
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
-                        <div class="card" style="text-align: center; opacity: 0.5;">
-                            <div class="card-body">
-                                <div style="font-size: 24px; margin-bottom: 8px;">🎯</div>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Primeira Missão</div>
-                                <div style="font-size: 12px; color: var(--color-text-secondary);">Complete seu primeiro check-in</div>
-                            </div>
-                        </div>
+/*** ========= Amostragem 95% ±5% ========= ***/
+function calcSample(){
+  const N=+$('#sampleN').value||0, p=+$('#sampleP').value||0.5, e=+$('#sampleE').value||0.05, Z=1.96;
+  const n0=(Z*Z*p*(1-p))/(e*e), n=Math.ceil(N? (n0/(1+(n0-1)/N)) : n0);
+  $('#sampleOut').textContent=`Precisa resolver ~ ${n} questões.`;
+}
 
-                        <div class="card" style="text-align: center; opacity: 0.5;">
-                            <div class="card-body">
-                                <div style="font-size: 24px; margin-bottom: 8px;">📚</div>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Estudioso</div>
-                                <div style="font-size: 12px; color: var(--color-text-secondary);">Estude por 10 horas</div>
-                            </div>
-                        </div>
+/*** ========= Charts ========= ***/
+function buildCharts(){
+  S.charts={
+    tempo:new Chart(document.getElementById('chartTempo'),{type:'bar',data:{labels:[],datasets:[{label:'Horas',data:[],backgroundColor:'#22c55e'}]},options:{plugins:{legend:{display:false}}}}),
+    acerto:new Chart(document.getElementById('chartAcerto'),{type:'bar',data:{labels:[],datasets:[{label:'% Acertos',data:[],backgroundColor:'#3b82f6'}]},options:{scales:{y:{min:0,max:100}}}}),
+    erros:new Chart(document.getElementById('chartErros'),{type:'doughnut',data:{labels:['Desatenção','Conceito','Lógica'],datasets:[{data:[0,0,0],backgroundColor:['#f59e0b','#ef4444','#8b5cf6']}]} })
+  }; updateCharts();
+}
+function updateCharts(){
+  // Tempo por matéria
+  const timeBy={}; for(const [m,mv] of Object.entries(S.materias)){ let sum=0; for(const [t,tv] of Object.entries(mv.topicos)){ for(const [s,sv] of Object.entries(tv.subs)){ sum+=(sv.spentMin||0)/60; } } timeBy[m]=(timeBy[m]||0)+sum; }
+  const L1=Object.keys(timeBy), D1=L1.map(k=>+timeBy[k].toFixed(1)); S.charts.tempo.data.labels=L1; S.charts.tempo.data.datasets[0].data=D1; S.charts.tempo.update();
+  // % acertos por matéria
+  const perfBy={}, cntBy={}; S.sessions.filter(x=>x.kind!=='checkin').forEach(x=>{ if(!x.m) return; perfBy[x.m]=(perfBy[x.m]||0)+(x.perf||0); cntBy[x.m]=(cntBy[x.m]||0)+1;});
+  const L2=Object.keys(perfBy), D2=L2.map(m=>Math.round(perfBy[m]/(cntBy[m]||1))); S.charts.acerto.data.labels=L2; S.charts.acerto.data.datasets[0].data=D2; S.charts.acerto.update();
+  // Tipos de erro
+  const E={'Desatenção':0,'Conceito':0,'Lógica':0}; S.sessions.filter(x=>x.kind==='externa').forEach(s=>{ if(E[s.errTipo]!=null) E[s.errTipo]++; });
+  S.charts.erros.data.datasets[0].data=[E['Desatenção'],E['Conceito'],E['Lógica']]; S.charts.erros.update();
+}
 
-                        <div class="card" style="text-align: center; opacity: 0.5;">
-                            <div class="card-body">
-                                <div style="font-size: 24px; margin-bottom: 8px;">🔥</div>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Sequência de Fogo</div>
-                                <div style="font-size: 12px; color: var(--color-text-secondary);">7 dias consecutivos</div>
-                            </div>
-                        </div>
+/*** ========= Dédalo — IA ========= ***/
+async function geminiText(prompt){
+  if(S.ai.useBackend){
+    try{ const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})}); return await res.json(); }
+    catch(e){return {text:'[Falha backend /api/gemini]'};}
+  } else {
+    if(!S.ai.key) return {text:'[Cole a Gemini API key no modo DEV]'};
+    const url=`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${S.ai.key}`;
+    const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})}); return await res.json();
+  }
+}
+function geminiOut(r){ try{ return r?.candidates?.[0]?.content?.parts?.map(p=>p.text).join('\n') || JSON.stringify(r); }catch{ return JSON.stringify(r);} }
+async function runFeynman(){
+  const m=$('#sessMateria').value, t=$('#sessTopico').value, s=$('#sessSub').value; const txt=$('#feynmanText').value.trim();
+  if(!txt) return alert('Explique algo no campo.');
+  const prompt=`Oráculo de Feynman: avalie a explicação. Matéria:${m}; Tópico:${t}>${s}. Dê (1) Correções; (2) Lacunas; (3) Analogias; (4) 3 flashcards.\nTexto:"""${txt}"""`;
+  const r=await geminiText(prompt); $('#feynmanOut').textContent=geminiOut(r);
+}
+async function runForja(){
+  const corpus=$('#forjaCorpus').value.trim(); if(!corpus) return alert('Cole um corpus.');
+  const n=+$('#forjaN').value||10, v=$('#forjaVec').value; const m=$('#sessMateria').value, t=$('#sessTopico').value, s=$('#sessSub').value;
+  const prompt=`Crie ${n} assertivas C/E estilo Cebraspe com gabarito + justificativa curta. Aplique "${v}" em ~50%.\nMatéria:${m}; Tópico:${t}>${s}.\nBase:"""${corpus.substring(0,4000)}"""`;
+  const r=await geminiText(prompt); $('#forjaOut').textContent=geminiOut(r);
+}
 
-                        <div class="card" style="text-align: center; opacity: 0.5;">
-                            <div class="card-body">
-                                <div style="font-size: 24px; margin-bottom: 8px;">⚡</div>
-                                <div style="font-weight: 600; margin-bottom: 4px;">Velocidade da Luz</div>
-                                <div style="font-size: 12px; color: var(--color-text-secondary);">Complete 50 questões em um dia</div>
-                            </div>
-                        </div>
-                    </div>
+/*** ========= ULGC (Drive + IA) ========= ***/
+let gapiReady=false;
+async function gInit(){ await new Promise(res=>gapi.load('client',res)); gapiReady=true; $('#gStatus').textContent='gapi carregado.';}
+async function gLogin(){
+  const clientId=$('#gClient').value.trim(), apiKey=$('#gApiKey').value.trim(); if(!clientId||!apiKey) return alert('Informe Client ID e API Key.');
+  if(!gapiReady){ await gInit(); }
+  await gapi.client.init({apiKey, discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]});
+  const tc = google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',callback:(resp)=>{S.drive.token=resp.access_token;S.drive.authed=true;$('#gStatus').textContent='Autenticado no Drive.';save();}});
+  tc.requestAccessToken();
+}
+async function driveFindOrCreatePath(parts, create=false){
+  let parent='root';
+  for(const name of parts){
+    const q=`'${parent}' in parents and mimeType='application/vnd.google-apps.folder' and name='${name}' and trashed=false`;
+    const r=await gapi.client.drive.files.list({q,fields:'files(id,name)',pageSize:10}); let id=r.result.files?.[0]?.id;
+    if(!id && create){ const meta={name,mimeType:'application/vnd.google-apps.folder',parents:[parent]}; const r2=await gapi.client.drive.files.create({resource:meta,fields:'id'}); id=r2.result.id;}
+    if(!id) return null; parent=id;
+  } return parent;
+}
+async function driveListFilesIn(folderId){
+  const q=`'${folderId}' in parents and trashed=false and (mimeType='application/pdf' or mimeType='text/plain')`; const r=await gapi.client.drive.files.list({q,fields:'files(id,name,mimeType)'}); return r.result.files||[];
+}
+async function driveFileToText(file){
+  const url=`https://www.googleapis.com/drive/v3/files/${file.id}?alt=media`; const res=await fetch(url,{headers:{Authorization:`Bearer ${S.drive.token}`}});
+  const blob=await res.blob(); if(file.mimeType==='application/pdf'){ const buf=await blob.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let text=''; for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p); const c=await pg.getTextContent(); text+=c.items.map(i=>i.str).join(' ')+'\\n';} return text; } else return await blob.text();
+}
+async function driveUploadTxt(folderId,name,content){
+  const metadata={name,parents:[folderId]}; const boundary='-------314159265358979323846', delimiter='\\r\\n--'+boundary+'\\r\\n', close='\\r\\n--'+boundary+'--';
+  const body= delimiter+'Content-Type: application/json; charset=UTF-8\\r\\n\\r\\n'+JSON.stringify(metadata)+'\\r\\n'+
+              delimiter+'Content-Type: text/plain\\r\\n\\r\\n'+content+close;
+  const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',{method:'POST',headers:{Authorization:'Bearer '+S.drive.token,'Content-Type':'multipart/related; boundary="'+boundary+'"'},body});
+  return await res.json();
+}
+async function runULGC(){
+  if(!S.drive.authed) return alert('Faça login no Google.');
+  const mat=$('#ulgcMat').value, top=$('#ulgcTop').value.trim(), niv=$('#ulgcNivel').value;
+  const log=t=>$('#ulgcLog').innerHTML+=`<div>${t}</div>`; $('#ulgcLog').innerHTML='';
+  log('Buscando fontes...');
+  const inputsId=await driveFindOrCreatePath(['MACHADO_ULGC','INPUTS',mat],false); if(!inputsId) return log('Pasta INPUTS não encontrada.');
+  const files=await driveListFilesIn(inputsId); const cand=files.filter(f=> f.name.toLowerCase().includes(mat.toLowerCase()) || f.name.toLowerCase().includes((top||'').toLowerCase()));
+  if(!cand.length) return log('Nenhum arquivo relevante.');
+  log(`Encontrados ${cand.length}. Consolidando...`);
+  let fonte=''; for(const f of cand){ const tx=await driveFileToText(f); fonte+=`\\n\\n[${f.name}]\\n${tx}`; if(fonte.length>120000) break; }
+  log('IA processando...');
+  const prompt=`Comando ULGC v5.0\nMatéria:${mat}\nTópico:${top}\nNível:${niv}\n[Fontes]:"""${fonte.substring(0,120000)}"""\nProduza: ===LEITURA_ATIVA=== ... ===ROTEIRO_AUDIO=== ... ===RESUMO_FEYNMAN=== ... ===QUESTOES=== ...`;
+  const r=await geminiText(prompt); const out=geminiOut(r);
+  log('Salvando no Drive...');
+  const outId=await driveFindOrCreatePath(['MACHADO_ULGC','OUTPUTS',mat],true);
+  const sec={'LEITURA_ATIVA':/===LEITURA_ATIVA===([\s\S]*?)===/i.exec(out)?.[1]||out,'ROTEIRO_AUDIO':/===ROTEIRO_AUDIO===([\s\S]*?)===/i.exec(out)?.[1]||'','RESUMO_FEYNMAN':/===RESUMO_FEYNMAN===([\s\S]*?)===/i.exec(out)?.[1]||'','QUESTOES':/===QUESTOES===([\s\S]*?)$/i.exec(out)?.[1]||''};
+  for(const [nm,ct] of Object.entries(sec)){ await driveUploadTxt(outId,`${mat} - ${top} - ${nm}.txt`,(ct||'').trim()); }
+  log('Concluído ✔️');
+}
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Progressão de Ranks</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="display: flex; flex-direction: column; gap: 12px;">
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: rgba(50, 184, 198, 0.08); border-radius: 8px; border: 1px solid var(--color-primary);">
-                                    <span style="font-size: 18px;">⭐</span>
-                                    <span style="font-weight: 600; flex: 1;">RECRUTA</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">0 - 500 XP</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--color-surface); border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                    <span style="font-size: 18px;">🥉</span>
-                                    <span style="font-weight: 600; flex: 1;">SOLDADO</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">500 - 1.500 XP</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--color-surface); border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                    <span style="font-size: 18px;">🥈</span>
-                                    <span style="font-weight: 600; flex: 1;">CABO</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">1.500 - 3.000 XP</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--color-surface); border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                    <span style="font-size: 18px;">🥇</span>
-                                    <span style="font-weight: 600; flex: 1;">SARGENTO</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">3.000 - 6.000 XP</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--color-surface); border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                    <span style="font-size: 18px;">🎖️</span>
-                                    <span style="font-weight: 600; flex: 1;">TENENTE</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">6.000 - 12.000 XP</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 16px; padding: 12px; background: var(--color-surface); border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                    <span style="font-size: 18px;">🏅</span>
-                                    <span style="font-weight: 600; flex: 1;">CAPITÃO</span>
-                                    <span style="font-size: 12px; color: var(--color-text-secondary); font-family: var(--font-family-mono);">12.000+ XP</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+/*** ========= PDF → Questões ========= ***/
+async function onPDF(){
+  const fs=[...$('#pdfFiles').files]; if(!fs.length) return alert('Selecione PDFs.');
+  const re=new RegExp($('#pdfRegex').value); $('#pdfMsg').textContent='Processando...';
+  for(const f of fs){ const buf=await f.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let tx=''; for(let p=1;p<=pdf.numPages;p++){const pg=await pdf.getPage(p); const c=await pg.getTextContent(); tx+=c.items.map(i=>i.str).join(' ')+'\\n';} const chunks=tx.split(re).map(t=>t.trim()).filter(t=>t.length>30); chunks.forEach((c,i)=>S.bancoQuestoes.push({id:`PDF_${Date.now()}_${i}`,materia:'',topico:'',subtopico:'',enunciado:c,gabarito:''})); }
+  save(); $('#pdfMsg').textContent=`Importadas ${S.bancoQuestoes.length} questões.`; const last=S.bancoQuestoes.slice(-200); $('#pdfTable').innerHTML=`<table><tr><th>#</th><th>Enunciado</th></tr>${last.map((q,i)=>`<tr><td>${i+1}</td><td>${q.enunciado.slice(0,170)}...</td></tr>`).join('')}</table>`;
+}
 
-            <!-- DÉDALO Module -->
-            <div id="dedalo-module" class="module">
-                <div class="module-header">
-                    <h2>🤖 DÉDALO - Interface de IA</h2>
-                    <p>Assistente inteligente para estudos</p>
-                </div>
+/*** ========= MIT / MAEP / MAR / VIGIA ========= ***/
+function topSubByIPA(){ const arr=[]; for(const [m,mv] of Object.entries(S.materias)){ for(const [t,tv] of Object.entries(mv.topicos)){ for(const [s,sv] of Object.entries(tv.subs)){ if(!sv.done) arr.push(keyOf(m,t,s)); } } } return arr.sort((a,b)=>IPA(b)-IPA(a)); }
+function buildMIT(){
+  const slots=+$('#mitSlots').value||4, len=+$('#mitLen').value||50; const picks=topSubByIPA().slice(0,3);
+  if(S.surprisePool.length) picks[picks.length-1] = `[Surpresa] ${S.surprisePool[Math.floor(Math.random()*S.surprisePool.length)]}`;
+  const plan=[]; for(let i=0;i<slots;i++){ plan.push({slot:i+1,min:len,sub:picks[i%picks.length]}); }
+  $('#mitPlan').innerHTML=`<table><tr><th>Slot</th><th>Min</th><th>Subtópico</th></tr>${plan.map(p=>`<tr><td>${p.slot}</td><td>${p.min}</td><td>${p.sub}</td></tr>`).join('')}</table><div class="small mt-1">Final: quiz misto (20 itens).</div>`;
+}
+async function mitQuizIA(){
+  const picks=topSubByIPA().slice(0,2); const prompt=`Gere 20 assertivas C/E mistas alternando entre:\n${picks.join(' ; ')}\nApresente gabarito ao final e justificativas curtas.`; const r=await geminiText(prompt); alert('Quiz gerado (console).'); console.log(geminiOut(r));
+}
+function addEdge(){ const A=$('#gA').value.trim(), B=$('#gB').value.trim(); if(!A||!B) return alert('Preencha A e B.');
+  if(!S.graph[A]) S.graph[A]=new Set(); if(!S.graph[B]) S.graph[B]=new Set(); S.graph[A].add(B); S.graph[B].add(A); save(); renderGraph();
+}
+function renderGraph(){ $('#graphOut').textContent= Object.entries(S.graph).map(([k,v])=>`${k} ↔ ${[...v].join(', ')}`).join('\n') || 'Grafo vazio.'; }
+function propagateRisk(node){
+  const neigh=S.graph[node]? [...S.graph[node]]:[]; if(!neigh.length) return;
+  const tomorrow=dayAdd(fmt(new Date()),1);
+  neigh.forEach(k=>S.reviews.push({date:tomorrow,subKey:`[VULNERABILIDADE] ${k} (micro-revisão 15′)`}));
+  save(); drawCalendar(2); alert(`Oráculo MAEP: ${neigh.length} tópicos correlatos marcados para ${tomorrow}.`);
+}
+function addVigia(){ const t=$('#vigiaText').value.trim(); if(!t) return; S.surprisePool.push(t); save(); $('#vigiaList').innerHTML=S.surprisePool.map(x=>`<div class="badge">${x}</div>`).join(' '); }
 
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Conversa com Machado</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="height: 400px; padding: 20px; overflow-y: auto; background: linear-gradient(to bottom, var(--color-surface), rgba(19, 52, 59, 0.02)); margin-bottom: 16px; border-radius: 8px; border: 1px solid var(--color-card-border);">
-                                <div style="text-align: center; color: var(--color-text-secondary); font-style: italic; margin-top: 150px;">
-                                    Olá, operador! Sou Machado, seu assistente de IA tático.<br>
-                                    Como posso ajudá-lo na missão hoje?
-                                </div>
-                            </div>
-                            
-                            <div style="display: flex; gap: 8px; padding: 16px; border-top: 1px solid var(--color-card-border); flex-wrap: wrap; margin-bottom: 16px;">
-                                <button class="btn" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 20px; font-size: 11px;">
-                                    Análise Feynman
-                                </button>
-                                <button class="btn" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 20px; font-size: 11px;">
-                                    Gerar Questões
-                                </button>
-                                <button class="btn" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 20px; font-size: 11px;">
-                                    Resumo Técnico
-                                </button>
-                                <button class="btn" style="padding: 6px 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 20px; font-size: 11px;">
-                                    Simulado Flash
-                                </button>
-                            </div>
+/*** ========= Export Sessões ========= ***/
+function exportSessionsCSV(){
+  const header=['ts','kind','materia','topico','subtopico','tipo','feynman_pct','perf','product','xp','concluded','desc','errTipo','conf'];
+  const rows=[header.join(',')].concat(S.sessions.map(s=>header.map(h=>JSON.stringify(s[h]??'')).join(',')));
+  download('sessões.csv',rows.join('\n'));
+}
 
-                            <div style="display: flex; gap: 12px;">
-                                <input type="text" placeholder="Digite sua mensagem..." style="flex: 1; padding: 12px; border: 2px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: var(--color-text);">
-                                <button class="btn btn-primary">
-                                    <span>➤</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+/*** ========= Helpers ========= ***/
+function onSessChanged(){ updateIGM(); }
+function drawReviewsIfNeeded(){}
 
-            <!-- ULGC Module -->
-            <div id="ulgc-module" class="module">
-                <div class="module-header">
-                    <h2>☁️ ULGC - Universal Learning Google Connector</h2>
-                    <p>Integração com Google Drive e Gemini AI</p>
-                </div>
+/*** ========= Bind extra ========= ***/
+function drawCalendarDelayed(){ setTimeout(drawCalendar,0); }
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>🔐 Autenticação Google</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="text-align: center; margin-bottom: 20px;">
-                                <div style="display: inline-flex; align-items: center; gap: 12px; padding: 16px; background: rgba(34, 197, 94, 0.08); border-radius: 8px; border: 1px solid rgba(34, 197, 94, 0.3);">
-                                    <span style="font-size: 24px;">📡</span>
-                                    <span style="font-weight: 600;">Pronto para conectar</span>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary w-full" onclick="connectGoogleDrive()">
-                                <span>🔗</span>
-                                Conectar Google Drive
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>⚙️ Geração de Material</h3>
-                        </div>
-                        <div class="card-body">
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Matéria</label>
-                                <select style="width: 100%; padding: 12px; border: 2px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: var(--color-text);">
-                                    <option>Medicina Legal</option>
-                                    <option>Direito Penal</option>
-                                    <option>Direito Administrativo</option>
-                                </select>
-                            </div>
-                            
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Tópico</label>
-                                <input type="text" placeholder="Digite o tópico..." style="width: 100%; padding: 12px; border: 2px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: var(--color-text);">
-                            </div>
-
-                            <div style="margin-bottom: 20px;">
-                                <label style="display: block; margin-bottom: 8px; font-weight: 500;">Nível</label>
-                                <select style="width: 100%; padding: 12px; border: 2px solid var(--color-border); border-radius: 8px; background: var(--color-surface); color: var(--color-text);">
-                                    <option>Fundamental</option>
-                                    <option>Médio</option>
-                                    <option>Superior</option>
-                                </select>
-                            </div>
-
-                            <button class="btn btn-primary w-full" onclick="generateMaterial()">
-                                <span>🚀</span>
-                                Gerar Material
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="generation-status" class="hidden" style="margin-top: 24px;">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Status da Geração</h3>
-                        </div>
-                        <div class="card-body">
-                            <div id="status-text" style="padding: 12px; background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px;">
-                                Aguardando...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <script>
-        // Sistema de Navegação
-        function initNavigation() {
-            const navButtons = document.querySelectorAll('.nav-btn');
-            const modules = document.querySelectorAll('.module');
-
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const moduleId = button.getAttribute('data-module');
-                    
-                    // Remove active class from all buttons
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    // Add active class to clicked button
-                    button.classList.add('active');
-                    
-                    // Hide all modules
-                    modules.forEach(module => module.classList.remove('active'));
-                    // Show selected module
-                    const targetModule = document.getElementById(moduleId + '-module');
-                    if (targetModule) {
-                        targetModule.classList.add('active');
-                    }
-                });
-            });
-        }
-
-        // Funções de Demonstração
-        function performCheckin() {
-            const statusDiv = document.getElementById('checkin-status');
-            statusDiv.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding: 16px; background: rgba(59, 130, 246, 0.08); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.3);">
-                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981; animation: pulse 2s ease-in-out infinite;"></div>
-                    <span>Check-in realizado com sucesso!</span>
-                </div>
-                <div style="margin-top: 16px; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 8px; text-align: center; font-weight: bold;">
-                    +15 XP Ganhos!
-                </div>
-            `;
-            
-            // Atualizar XP no header
-            const xpElement = document.getElementById('current-xp');
-            const currentXP = parseInt(xpElement.textContent);
-            xpElement.textContent = currentXP + 15;
-        }
-
-        function connectGoogleDrive() {
-            const statusDiv = document.getElementById('generation-status');
-            const statusText = document.getElementById('status-text');
-            
-            statusDiv.classList.remove('hidden');
-            statusText.textContent = '🔄 Conectando ao Google Drive...';
-            
-            setTimeout(() => {
-                statusText.innerHTML = '✅ Conectado ao Google Drive com sucesso!';
-                
-                // Atualizar botão de conexão
-                const connectBtn = event.target;
-                connectBtn.innerHTML = '<span>✅</span> Conectado';
-                connectBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-                connectBtn.disabled = true;
-            }, 2000);
-        }
-
-        function generateMaterial() {
-            const statusDiv = document.getElementById('generation-status');
-            const statusText = document.getElementById('status-text');
-            
-            statusDiv.classList.remove('hidden');
-            
-            const steps = [
-                '🔍 Buscando fontes...',
-                '🧠 Analisando conteúdo...',
-                '📝 Gerando material...',
-                '💾 Salvando no Drive...',
-                '✅ Material gerado com sucesso!'
-            ];
-            
-            let currentStep = 0;
-            const interval = setInterval(() => {
-                statusText.textContent = steps[currentStep];
-                currentStep++;
-                
-                if (currentStep >= steps.length) {
-                    clearInterval(interval);
-                    
-                    // Adicionar XP
-                    const xpElement = document.getElementById('current-xp');
-                    const currentXP = parseInt(xpElement.textContent);
-                    xpElement.textContent = currentXP + 25;
-                    
-                    // Mostrar notificação de XP
-                    setTimeout(() => {
-                        statusText.innerHTML = '✅ Material gerado com sucesso!<br><div style="margin-top: 12px; padding: 12px; background: linear-gradient(135deg, #10b981, #059669); color: white; border-radius: 8px; text-align: center; font-weight: bold;">+25 XP Ganhos!</div>';
-                    }, 500);
-                }
-            }, 1500);
-        }
-
-        // Inicializar aplicação
-        document.addEventListener('DOMContentLoaded', function() {
-            initNavigation();
-            
-            // Animação do header
-            const headerValue = document.querySelector('.stat-value');
-            if (headerValue) {
-                setInterval(() => {
-                    headerValue.style.textShadow = '0 0 10px var(--military-accent)';
-                    setTimeout(() => {
-                        headerValue.style.textShadow = 'none';
-                    }, 1000);
-                }, 3000);
-            }
-        });
-
-        // Service Worker para PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript;base64,c2VsZi5hZGRFdmVudExpc3RlbmVyKCdpbnN0YWxsJywgZXZlbnQgPT4ge30pOw==');
-        }
-    </script>
+/*** ========= Final ========= ***/
+save(); renderGraph(); $('#vigiaList').innerHTML=S.surprisePool.map(x=>`<div class="badge">${x}</div>`).join(' ');
+</script>
 </body>
 </html>
