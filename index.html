@@ -320,7 +320,7 @@ kbd{background:#111827;border:1px solid #263040;border-radius:4px;padding:2px 4p
 </main>
 
 <footer class="max-w-7xl mx-auto p-4 small text-center text-slate-400">
-  Machado v6.5 — PWA • Ctrl+I: MAD (imprevistos) • Ctrl+Enter: Encerrar Sessão • Dados em localStorage • Gemini via /api/gemini.
+  Machado v6.5 — PWA • Ctrl+I: MAD (imprevistos) • Ctrl+Enter: Encerrar Sessão • Dados em localStorage • Gemini via <code>https://machado-app.vercel.app/api/gemini</code>.
 </footer>
 
 <script>
@@ -447,7 +447,7 @@ function onSessTop(){
 
 /*** ========= IGM (Missões + Progresso) ========= ***/
 function updateIGM(){
-  // Missões do dia (calendário de hoje + MRA por KS)
+  // Missões do dia
   const today=fmt(new Date()); const d=S.schedule.find(x=>x.date===today);
   let list='—';
   if(d && d.tasks?.length){
@@ -460,7 +460,7 @@ function updateIGM(){
   }
   $('#odDia').innerHTML=list;
 
-  // Progresso geral e por matéria
+  // Progresso
   let done=0, total=0; const pm=[];
   for(const [m,mv] of Object.entries(S.materias)){
     let d=0,t=0;
@@ -694,10 +694,18 @@ function updateCharts(){
 }
 
 /*** ========= Dédalo — IA ========= ***/
+const BACKEND = 'https://machado-app.vercel.app/api/gemini'; // <<< SUA VERCEL
+
 async function geminiText(prompt){
   if(S.ai.useBackend){
-    try{ const res=await fetch('/api/gemini',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})}); return await res.json(); }
-    catch(e){return {text:'[Falha backend /api/gemini]'};}
+    try{
+      const res = await fetch(BACKEND,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ prompt })
+      });
+      return await res.json();
+    }catch(e){ console.error(e); return {text:'[Falha backend /api/gemini]'}; }
   } else {
     if(!S.ai.key) return {text:'[Cole a Gemini API key no modo DEV]'};
     const url=`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${S.ai.key}`;
