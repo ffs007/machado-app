@@ -730,12 +730,48 @@ async function runForja(){
 let gapiReady=false;
 async function gInit(){ await new Promise(res=>gapi.load('client',res)); gapiReady=true; $('#gStatus').textContent='gapi carregado.';}
 async function gLogin(){
-  const clientId=$('#gClient').value.trim(), apiKey=$('#gApiKey').value.trim(); if(!clientId||!apiKey) return alert('Informe Client ID e API Key.');
-  if(!gapiReady){ await gInit(); }
-  await gapi.client.init({apiKey, discoveryDocs:["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]});
-  const tc = google.accounts.oauth2.initTokenClient({client_id:clientId,scope:'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',callback:(resp)=>{S.drive.token=resp.access_token;S.drive.authed=true;$('#gStatus').textContent='Autenticado no Drive.';save();}});
-  tc.requestAccessToken();
+  const clientId = document.getElementById('gClient').value.trim();
+  const apiKey   = document.getElementById('gApiKey').value.trim();
+  const set = t => document.getElementById('gStatus').textContent = t;
+
+  try{
+    if(!clientId || !apiKey){ set('Informe Client ID e API Key.'); return; }
+    if(!gapiReady){ await gInit(); }
+
+    await gapi.client.init({
+      apiKey,
+      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"]
+    });
+
+    if(!window.google?.accounts?.oauth2){
+      set('GIS não carregou (bloqueio de script ou cookies).'); return;
+    }
+
+    const tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: clientId,
+      scope: 'https://www.googleapis.com/auth/drive.readonly https://www.googleapis.com/auth/drive.file',
+      prompt: 'consent',
+      callback: (resp) => {
+        if(resp?.access_token){
+          S.drive.token = resp.access_token;
+          S.drive.authed = true;
+          set('Autenticado no Drive.');
+          save();
+        }else if(resp?.error){
+          set('OAuth erro: ' + resp.error + '. Verifique Test users e Origins.');
+        }else{
+          set('Login cancelado.');
+        }
+      }
+    });
+
+    tokenClient.requestAccessToken();
+  }catch(err){
+    console.error(err);
+    set('OAuth falhou: ' + (err?.message || String(err)) + ' | origin=' + location.origin);
+  }
 }
+
 async function driveFindOrCreatePath(parts, create=false){
   let parent='root';
   for(const name of parts){
